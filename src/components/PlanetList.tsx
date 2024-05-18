@@ -1,25 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import React, { useEffect, useState } from "react";
+import useDeBounce, { useAppDispatch, useAppSelector } from "../hooks";
 import { fetchPlanets, setPage } from "../features/planets/planetSlice";
+import Search from "./Search";
 
 const PlanetList: React.FC = () => {
     const dispatch = useAppDispatch();
-    const { planets, page, totalPages, loading, error } = useAppSelector(
+    const { planets, page, totalPages, loading, error, searchQuery } = useAppSelector(
         (state) => state.planets
     );
 
+    
+    const [query, setQuery] = useState(searchQuery);
+    const debouncedQuery = useDeBounce(query, 700);
+
     useEffect(() => {
-        dispatch(fetchPlanets(page));
-    }, [dispatch, page]);
-
-    if (loading) {
-        return <div>Loading...</div>
-    }
-
-    if (error) {
-        return <div>{error}</div>
-    }
+      dispatch(fetchPlanets({ page, searchQuery: debouncedQuery }));
+  }, [dispatch, page, debouncedQuery]);
 
     const handlePrevPage = () => {
         if (page > 1) {
@@ -36,6 +33,13 @@ const PlanetList: React.FC = () => {
     return (
         <div className="users">
           <h1>Planets</h1>
+          <Search query={query} setQuery={setQuery} />
+          {loading ? (
+    <div>Loading...</div>
+) : error ? (
+    <div>{error}</div>
+) : (
+  <>
           <div>
             {planets.map((planet: any) => (
               <div key={planet.name} className="user-card">
@@ -51,6 +55,8 @@ const PlanetList: React.FC = () => {
           <button onClick={handleNextPage} disabled={page === totalPages}>
             Next
           </button>
+        </>
+      )}
         </div>
       );
 }

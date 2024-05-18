@@ -1,8 +1,7 @@
 // import AddTodo from './AddTodo'
 import '../index.css'
-// import PlanetList from './PlanetList'
-// import Planets from './Planets'
-import UserList from './UserList'
+import PlanetList from './PlanetList'
+// import UserList from './UserList'
 // import TodoList from './TodoList'
 
 function App() {
@@ -14,8 +13,8 @@ function App() {
       {/* <TodoList/>
       <AddTodo/> */}
 
-      <UserList/>
-      {/* <PlanetList/> */}
+      {/* <UserList/> */}
+      <PlanetList/>
     </div>
     </>
   )

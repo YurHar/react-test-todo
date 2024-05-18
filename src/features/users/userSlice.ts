@@ -7,7 +7,7 @@ interface UserState {
     totalPages: number;
     loading: boolean;
     error: string | null;
-    search: string;
+    searchQuery: string;
 }
 
 const initialState: UserState = {
@@ -16,12 +16,11 @@ const initialState: UserState = {
     totalPages: 1,
     loading: false,
     error: null,
-    search: "",
+    searchQuery: "",
 };
 
-const fetchUsers = createAsyncThunk("users/fetchUsers", async (_, { getState }) => {
-    const { users: { page, search } } = getState();
-    const response = await axios.get(`https://swapi.dev/api/people/?page=${page}&search=${search}`);
+const fetchUsers = createAsyncThunk("users/fetchUsers", async ({ page, searchQuery }: { page: number, searchQuery: string }) => {
+    const response = await axios.get(`https://swapi.dev/api/people/?page=${page}&search=${searchQuery}`);
     return response.data;
 });
 
@@ -32,8 +31,9 @@ const userSlice = createSlice({
         setPage(state, action) {
             state.page = action.payload;
         },
-        setSearch(state, action) { // Add setSearch reducer
-            state.search = action.payload;
+        setSearchQuery(state, action) {
+            state.searchQuery = action.payload;
+            state.page = 1;
         }
     },
     extraReducers: (builder) => {
@@ -55,7 +55,7 @@ const userSlice = createSlice({
     },
 });
 
-export const { setPage, setSearch } = userSlice.actions;
+export const { setPage, setSearchQuery } = userSlice.actions;
 
 export { fetchUsers };
 

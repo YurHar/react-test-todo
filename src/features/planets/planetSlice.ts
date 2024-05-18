@@ -7,6 +7,7 @@ interface PlanetState {
     totalPages: number;
     loading: boolean;
     error: string | null;
+    searchQuery: string;
 }
 
 const initialState: PlanetState = {
@@ -15,10 +16,11 @@ const initialState: PlanetState = {
     totalPages: 1,
     loading: false,
     error: null,
+    searchQuery: "",
 };
 
-const fetchPlanets = createAsyncThunk("planets/fetchPlanets", async (page: number) => {
-    const response = await axios.get(`https://swapi.dev/api/planets/?page=${page}`)
+const fetchPlanets = createAsyncThunk("planets/fetchPlanets", async ({ page, searchQuery }: { page: number, searchQuery: string }) => {
+    const response = await axios.get(`https://swapi.dev/api/planets/?page=${page}&search=${searchQuery}`)
 
     return response.data;
 })
@@ -29,7 +31,11 @@ const userSlice = createSlice({
     reducers: {
         setPage(state, action) {
             state.page = action.payload;
-        }
+        },
+        setSearchQuery(state, action) {
+            state.searchQuery = action.payload;
+            state.page = 1;
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(fetchPlanets.pending, (state) => {
